@@ -1,13 +1,17 @@
 package com.smartgated.platform.domain.model.users;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.smartgated.platform.domain.enums.user.UserRole;
+import com.smartgated.platform.domain.model.posts.Post;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,6 +26,8 @@ public class User {
     private String imageUrl;
     private UserRole role;
 
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
 
     public User() {
     }
