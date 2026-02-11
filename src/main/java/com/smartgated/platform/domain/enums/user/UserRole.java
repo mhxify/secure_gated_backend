@@ -4,7 +4,8 @@ public enum UserRole {
     ADMIN("ADMIN"),
     GUEST("GUEST"),
     RESIDENT("RESIDENT"),
-    SECURITY_GUARD("SECURITY_GUARD");
+    SECURITY_GUARD("SECURITY_GUARD"),
+    STAFF("STAFF");
 
     private final String value;
 
