@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.smartgated.platform.application.usecase.notification.NotificationUseCase;
-import com.smartgated.platform.domain.model.notification.Notification;
 import com.smartgated.platform.presentation.dto.notification.get.GetNotificationDto;
 import com.smartgated.platform.presentation.dto.notification.post.request.PostNotificationRequest;
 import com.smartgated.platform.presentation.dto.notification.post.response.PostNotificationResponse;
