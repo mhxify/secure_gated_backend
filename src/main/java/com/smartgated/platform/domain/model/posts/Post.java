@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.grammars.hql.HqlParser.DateTimeContext;
 
 import com.smartgated.platform.domain.model.comments.Comment;
 import com.smartgated.platform.domain.model.users.User;

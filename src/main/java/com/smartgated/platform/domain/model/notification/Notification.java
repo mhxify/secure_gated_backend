@@ -3,8 +3,6 @@ package com.smartgated.platform.domain.model.notification;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.smartgated.platform.domain.model.users.User;
 
 import jakarta.persistence.Entity;

@@ -3,13 +3,10 @@ package com.smartgated.platform.domain.model.report;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.hibernate.grammars.hql.HqlParser.DateTimeContext;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.smartgated.platform.domain.model.users.User;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

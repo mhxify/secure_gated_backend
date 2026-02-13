@@ -3,8 +3,6 @@ package com.smartgated.platform.domain.model.incident;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.hibernate.grammars.hql.HqlParser.DateTimeContext;
-
 import com.smartgated.platform.domain.enums.incident.IncidentStatus;
 import com.smartgated.platform.domain.model.category.Category;
 import com.smartgated.platform.domain.model.users.User;
