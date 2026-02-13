@@ -1,11 +1,16 @@
 package com.smartgated.platform.domain.model.comments;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.smartgated.platform.domain.model.posts.Post;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,18 +23,30 @@ public class Comment {
     private String content;
     private UUID postId;
     private UUID userId;
-    private String createdAt;
+    private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Post post;
 
     public Comment() {
     }
 
-    public Comment(String content, UUID postId, UUID userId, String createdAt) {
+    public Comment(String content, UUID postId, UUID userId, LocalDateTime createdAt) {
         this.content = content;
         this.postId = postId;
         this.userId = userId;
         this.createdAt = createdAt;
     }
 
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    
     public UUID getCommentId() {
         return commentId;
     }
@@ -58,11 +75,11 @@ public class Comment {
         this.userId = userId;
     }
 
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }

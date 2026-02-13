@@ -1,13 +1,18 @@
 package com.smartgated.platform.domain.model.notification;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.smartgated.platform.domain.model.users.User;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,15 +24,26 @@ public class Notification {
     private UUID notificationId;
     private String content;
     private boolean isRead;
-    private DateTimeFormat createdAt;
+    private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
     public Notification() {
     }
 
-    public Notification(String content, boolean isRead, DateTimeFormat createdAt) {
+    public Notification(String content, boolean isRead, LocalDateTime createdAt) {
         this.content = content;
         this.isRead = isRead;
         this.createdAt = createdAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public UUID getNotificationId() {
@@ -50,11 +66,11 @@ public class Notification {
         this.isRead = isRead;
     }
 
-    public DateTimeFormat getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(DateTimeFormat createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
     

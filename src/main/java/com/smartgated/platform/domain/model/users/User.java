@@ -4,13 +4,18 @@ import java.util.List;
 import java.util.UUID;
 
 import com.smartgated.platform.domain.enums.user.UserRole;
+import com.smartgated.platform.domain.model.incident.Incident;
+import com.smartgated.platform.domain.model.notification.Notification;
 import com.smartgated.platform.domain.model.posts.Post;
+import com.smartgated.platform.domain.model.report.Report;
+import com.smartgated.platform.domain.model.reservation.Reservation;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -24,10 +29,66 @@ public class User {
     private String email;
     private String password;
     private String imageUrl;
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 
     @OneToMany(mappedBy = "user")
+    private List<Notification> notifications;
+    
+
+    @OneToMany(mappedBy = "user")
     private List<Post> posts;
+
+    @OneToMany(mappedBy = "user")
+    private List<Incident> incidents;
+
+    @OneToMany(mappedBy = "user")
+    private List<Report> reports;
+
+    @OneToMany(mappedBy = "user")
+    private List<Reservation> reservations;
+
+    public List<Report> getReports() {
+        return reports;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
+    
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
+    }
+    
+
+    public List<Incident> getIncidents() {
+        return incidents;
+    }
+
+    public void setIncidents(List<Incident> incidents) {
+        this.incidents = incidents;
+    }
+    
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+    
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
+    }
 
     public User() {
     }
