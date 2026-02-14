@@ -1,5 +1,6 @@
 package com.smartgated.platform.application.service.post;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ import com.smartgated.platform.infrastructure.repository.user.UserRepository;
 import com.smartgated.platform.presentation.dto.post.create.request.CreatePostRequest;
 import com.smartgated.platform.presentation.dto.post.create.response.CreatePostResponse;
 import com.smartgated.platform.presentation.dto.post.get.GetPost;
+import com.smartgated.platform.presentation.dto.post.update.UpdatePost;
 
 @Service
 public class PostService implements PostUseCase {
@@ -35,6 +37,7 @@ public class PostService implements PostUseCase {
         post.setContent(request.getContent());
         post.setImageUrl(request.getImageUrl());
         post.setUser(user);
+        post.setCreatedAt(LocalDateTime.now());
 
         Post savedPost = postRepository.save(post);
 
@@ -57,7 +60,7 @@ public class PostService implements PostUseCase {
     }
 
     @Override
-    public void updatePost(UUID postId, CreatePostRequest request) {
+    public void updatePost(UUID postId, UpdatePost request) {
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new RuntimeException("Post not found"));
         post.setContent(request.getContent());
@@ -90,5 +93,17 @@ public class PostService implements PostUseCase {
             getPost.setCreatedAt(post.getCreatedAt());
             return getPost;
         }).toList();
+    }
+
+    @Override
+    public GetPost getPostById(UUID postId) {
+        Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new RuntimeException("Post not found"));
+        GetPost getPost = new GetPost();
+        getPost.setPostId(post.getPostId());
+        getPost.setContent(post.getContent());
+        getPost.setImageUrl(post.getImageUrl());
+        getPost.setCreatedAt(post.getCreatedAt());
+        return getPost;
     }
 }

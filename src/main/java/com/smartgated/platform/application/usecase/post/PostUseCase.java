@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.smartgated.platform.presentation.dto.post.create.request.CreatePostRequest;
 import com.smartgated.platform.presentation.dto.post.create.response.CreatePostResponse;
 import com.smartgated.platform.presentation.dto.post.get.GetPost;
+import com.smartgated.platform.presentation.dto.post.update.UpdatePost;
 
 public interface PostUseCase {
 
@@ -13,11 +14,12 @@ public interface PostUseCase {
 
     void deletePost(UUID postId);
 
-    void updatePost(UUID postId, CreatePostRequest request);
+    void updatePost(UUID postId, UpdatePost request);
 
     List<GetPost> getPostsByUserId(UUID userId);
 
     List<GetPost> getAllPosts();
 
+    GetPost getPostById(UUID postId);
     
 }

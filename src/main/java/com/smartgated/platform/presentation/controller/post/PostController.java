@@ -7,6 +7,7 @@ import com.smartgated.platform.application.usecase.post.PostUseCase;
 import com.smartgated.platform.presentation.dto.post.create.request.CreatePostRequest;
 import com.smartgated.platform.presentation.dto.post.create.response.CreatePostResponse;
 import com.smartgated.platform.presentation.dto.post.get.GetPost;
+import com.smartgated.platform.presentation.dto.post.update.UpdatePost;
 
 import java.util.List;
 import java.util.UUID;
@@ -45,11 +46,17 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}")
-    public ResponseEntity<Void> updatePost(@PathVariable UUID postId , @RequestBody CreatePostRequest request) {
+    public ResponseEntity<Void> updatePost(@PathVariable UUID postId , @RequestBody UpdatePost request) {
         postUseCase.updatePost(postId, request);
         return ResponseEntity.noContent().build();
     }
     
+    @GetMapping("/{postId}")
+    public ResponseEntity<GetPost> getPostById(@PathVariable UUID postId) {
+        GetPost post = postUseCase.getPostById(postId);
+        return ResponseEntity.ok(post);
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<List<GetPost>> getPostsByUserId(@PathVariable UUID userId) {
         List<GetPost> posts = postUseCase.getPostsByUserId(userId);
