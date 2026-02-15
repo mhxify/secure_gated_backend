@@ -1,6 +1,9 @@
 package com.smartgated.platform.presentation.dto.post.get;
 
+import com.smartgated.platform.presentation.dto.comment.get.GetComment;
+
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class GetPost {
@@ -9,8 +12,15 @@ public class GetPost {
     private String content;
     private String imageUrl;
     private LocalDateTime createdAt;
+    private List<GetComment> comments;
 
+    public List<GetComment> getComments() {
+        return comments;
+    }
 
+    public void setComments(List<GetComment> comments) {
+        this.comments = comments;
+    }
 
     public UUID getPostId() {
         return postId;
