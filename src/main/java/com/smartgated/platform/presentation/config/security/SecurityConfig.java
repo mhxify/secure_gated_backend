@@ -1,4 +1,4 @@
-package com.smartgated.platform.presentation.config;
+package com.smartgated.platform.presentation.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
