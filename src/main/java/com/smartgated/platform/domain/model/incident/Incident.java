@@ -37,7 +37,7 @@ public class Incident {
     private User user;
 
 
-     public User getUser() {
+    public User getUser() {
         return user;
     }
 
