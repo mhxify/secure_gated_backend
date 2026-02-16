@@ -7,7 +7,6 @@ import java.util.UUID;
 public class PostNotificationRequest {
 
     private String content;
-    private LocalDateTime createdAt;
     private UUID userId;
 
     public UUID getUserId() {
@@ -24,14 +23,6 @@ public class PostNotificationRequest {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
     
 }

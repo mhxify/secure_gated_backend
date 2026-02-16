@@ -1,8 +1,11 @@
 package com.smartgated.platform.application.service.notification;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.smartgated.platform.application.service.fcm.FcmSender;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +41,7 @@ public class NotificationService implements NotificationUseCase {
         Notification notification = new Notification();
         notification.setContent(request.getContent());
         notification.setRead(false);
-        notification.setCreatedAt(request.getCreatedAt());
+        notification.setCreatedAt(LocalDateTime.now());
 
         var user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -46,6 +49,22 @@ public class NotificationService implements NotificationUseCase {
         notification.setUser(user);
 
         Notification savedNotification = notificationRepository.save(notification);
+
+        String token = user.getFcmToken();
+
+        if (token != null && !token.isBlank()) {
+            try {
+                fcmSender.sendNotification(
+                        token,
+                        "SmartGated",
+                        savedNotification.getContent(),
+                        Map.of("notificationId", savedNotification.getNotificationId().toString())
+                );
+            } catch (FirebaseMessagingException e) {
+                System.out.println("FCM failed: " + e.getMessage());
+            }
+        }
+
 
         PostNotificationResponse response = new PostNotificationResponse();
         response.setNotificationId(savedNotification.getNotificationId());

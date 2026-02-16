@@ -72,8 +72,8 @@ public class UserController {
 
     @PatchMapping
     public ResponseEntity<Void> updateFcmToken(
-            UUID userId ,
-            UpdateFcmToken request
+            @PathVariable UUID userId ,
+            @RequestBody UpdateFcmToken request
     ) {
         userUseCase.updateFcmToken(userId , request);
         return ResponseEntity.noContent().build();
