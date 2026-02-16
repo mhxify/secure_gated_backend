@@ -120,7 +120,6 @@ public class PostService implements PostUseCase {
         dto.setImageUrl(post.getImageUrl());
         dto.setCreatedAt(post.getCreatedAt());
 
-        // 🔥 Fetch comments safely (no lazy issues)
         List<GetComment> comments = commentRepository
                 .findByPost_PostId(post.getPostId())
                 .stream()
