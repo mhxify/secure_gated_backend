@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.smartgated.platform.domain.enums.user.UserRole;
+import com.smartgated.platform.presentation.dto.fcm.update.UpdateFcmToken;
 import com.smartgated.platform.presentation.dto.user.edit.password.request.EditPasswordRequest;
 import com.smartgated.platform.presentation.dto.user.edit.profile.request.EditProfileRequest;
 import com.smartgated.platform.presentation.dto.user.register.register.RegisterRequest;
@@ -27,6 +28,8 @@ public interface UserUseCase {
     List<RegisterResponse> getAllUsers();
     
     long countByRole(UserRole role);
+
+    void updateFcmToken(UUID userId , UpdateFcmToken request);
 
 }
 
