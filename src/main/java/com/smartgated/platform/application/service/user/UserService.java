@@ -3,6 +3,7 @@ package com.smartgated.platform.application.service.user;
 import java.util.List;
 import java.util.UUID;
 
+import com.smartgated.platform.presentation.dto.fcm.update.UpdateFcmToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -136,6 +137,20 @@ public class UserService implements UserUseCase {
             return userRepository.count();
         }
         return userRepository.countByRole(role);
+    }
+
+    @Override
+    public void updateFcmToken(
+            UUID userId ,
+            UpdateFcmToken request
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User Not found"));
+
+        user.setFcmToken(request.getFcmToken());
+
+        userRepository.save(user);
+
     }
 
 }
