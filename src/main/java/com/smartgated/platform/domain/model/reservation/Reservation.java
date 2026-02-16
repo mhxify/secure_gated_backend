@@ -3,21 +3,15 @@ package com.smartgated.platform.domain.model.reservation;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 
 import com.smartgated.platform.domain.enums.reservation.ReservationStatus;
+import com.smartgated.platform.domain.model.facilities.Facilities;
 import com.smartgated.platform.domain.model.users.User;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "reservations")
@@ -42,7 +36,17 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
-    
+
+    @OneToMany(mappedBy = "reservation")
+    List<Facilities> facilities ;
+
+    public List<Facilities> getFacilities() {
+        return facilities;
+    }
+
+    public void setFacilities(List<Facilities> facilities) {
+        this.facilities = facilities;
+    }
 
     public UUID getReservationId() {
         return reservationId;
