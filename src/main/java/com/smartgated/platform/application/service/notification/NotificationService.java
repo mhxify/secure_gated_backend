@@ -3,6 +3,7 @@ package com.smartgated.platform.application.service.notification;
 import java.util.List;
 import java.util.UUID;
 
+import com.smartgated.platform.application.service.fcm.FcmSender;
 import org.springframework.stereotype.Service;
 
 import com.smartgated.platform.application.usecase.notification.NotificationUseCase;
@@ -18,11 +19,17 @@ public class NotificationService implements NotificationUseCase {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final FcmSender fcmSender;
 
-    public NotificationService(NotificationRepository notificationRepository,
-                               UserRepository userRepository) {
+
+    public NotificationService(
+            NotificationRepository notificationRepository,
+            UserRepository userRepository ,
+            FcmSender fcmSender
+    ) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
+        this.fcmSender = fcmSender;
     }
 
     @Override
