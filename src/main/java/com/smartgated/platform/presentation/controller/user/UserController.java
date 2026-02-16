@@ -3,6 +3,7 @@ package com.smartgated.platform.presentation.controller.user;
 import java.util.List;
 import java.util.UUID;
 
+import com.smartgated.platform.presentation.dto.fcm.update.UpdateFcmToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,6 +68,15 @@ public class UserController {
     @GetMapping("/count")
     public ResponseEntity<Long> countUsers(@RequestParam(required = false) UserRole role) {
         return ResponseEntity.ok(userUseCase.countByRole(role));
+    }
+
+    @PatchMapping
+    public ResponseEntity<Void> updateFcmToken(
+            UUID userId ,
+            UpdateFcmToken request
+    ) {
+        userUseCase.updateFcmToken(userId , request);
+        return ResponseEntity.noContent().build();
     }
 
 }
