@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.smartgated.platform.domain.enums.user.UserRole;
 import com.smartgated.platform.domain.model.incident.Incident;
+import com.smartgated.platform.domain.model.messageGroup.MessageGroup;
 import com.smartgated.platform.domain.model.notification.Notification;
 import com.smartgated.platform.domain.model.posts.Post;
 import com.smartgated.platform.domain.model.report.Report;
@@ -27,7 +28,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;
-    
+
+    @OneToMany(mappedBy = "user")
+    private List<MessageGroup> groups ;
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts;
@@ -52,6 +55,13 @@ public class User {
         this.fcmToken = fcmToken;
     }
 
+    public void setGroups(List<MessageGroup> groups) {
+        this.groups = groups;
+    }
+
+    public List<MessageGroup> getGroups() {
+        return groups ;
+    }
 
     public List<Report> getReports() {
         return reports;
