@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -22,6 +23,8 @@ public class Log {
     private UserRole userRole ;
 
     private String logState ;
+
+    private LocalDateTime logTime ;
 
     public Log(){}
 
