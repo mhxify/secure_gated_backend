@@ -2,12 +2,10 @@ package com.smartgated.platform.application.service.log;
 
 import com.smartgated.platform.application.usecase.log.LogUseCase;
 import com.smartgated.platform.domain.model.log.Log;
-import com.smartgated.platform.domain.model.notification.Notification;
 import com.smartgated.platform.infrastructure.repository.log.LogRepository;
 import com.smartgated.platform.presentation.dto.log.create.request.CreateLogRequest;
 import com.smartgated.platform.presentation.dto.log.create.response.CreateLogResponse;
 import com.smartgated.platform.presentation.dto.log.get.GetLog;
-import com.smartgated.platform.presentation.dto.notification.get.GetNotificationDto;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
