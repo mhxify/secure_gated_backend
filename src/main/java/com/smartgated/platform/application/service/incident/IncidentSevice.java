@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.smartgated.platform.domain.enums.user.UserRole;
+import com.smartgated.platform.domain.model.notification.Notification;
+import com.smartgated.platform.infrastructure.repository.notification.NotificationRepository;
 import org.springframework.stereotype.Service;
 
 import com.smartgated.platform.application.usecase.incident.IncidentUseCase;
@@ -25,16 +28,19 @@ public class IncidentSevice implements IncidentUseCase {
     private final IncidentRepository incidentRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final NotificationRepository notificationRepository ;
 
 
     public IncidentSevice(
         IncidentRepository incidentRepository,
         UserRepository userRepository,
-        CategoryRepository categoryRepository
+        CategoryRepository categoryRepository ,
+        NotificationRepository notificationRepository
     ) {
         this.incidentRepository = incidentRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
+        this.notificationRepository = notificationRepository ;
     }
 
 
@@ -58,7 +64,25 @@ public class IncidentSevice implements IncidentUseCase {
         incident.setStatus(IncidentStatus.PENDING);
         incident.setReportedAt(LocalDateTime.now());
 
+
         Incident savedIncident = incidentRepository.save(incident);
+
+        List<User> admins = userRepository.findByRole(UserRole.ADMIN);
+
+        String content = "New incident reported by " + user.getFullname()
+                + " (Category: " + category.getCategoryName() + "). "
+                + "IncidentId: " + savedIncident.getIncidentId();
+
+        List<Notification> notifications = admins.stream().map(admin -> {
+            Notification n = new Notification();
+            n.setUser(admin);                 // receiver = admin
+            n.setCreatedAt(LocalDateTime.now());
+            n.setRead(false);
+            n.setContent(content);
+            return n;
+        }).toList();
+
+        notificationRepository.saveAll(notifications);
 
         CreateIncidentResponse response = new CreateIncidentResponse();
 
@@ -84,15 +108,28 @@ public class IncidentSevice implements IncidentUseCase {
 
     @Override
     public Void updateIncidentStatus(UUID incidentId, String status) {
-        Incident incident = incidentRepository.findById(incidentId)
-            .orElseThrow(() -> new RuntimeException("Incident not found"));
 
+        Incident incident = incidentRepository.findById(incidentId)
+                .orElseThrow(() -> new RuntimeException("Incident not found"));
+
+        IncidentStatus newStatus;
         try {
-            IncidentStatus newStatus = IncidentStatus.valueOf(status.toUpperCase());
-            incident.setStatus(newStatus);
-            incidentRepository.save(incident);
+            newStatus = IncidentStatus.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid status value");
+        }
+
+        incident.setStatus(newStatus);
+        Incident saved = incidentRepository.save(incident);
+
+        User owner = saved.getUser();
+        if (owner != null) {
+            Notification n = new Notification();
+            n.setUser(owner);
+            n.setCreatedAt(LocalDateTime.now());
+            n.setRead(false);
+            n.setContent("Your incident (" + saved.getIncidentId() + ") status is now: " + newStatus.name());
+            notificationRepository.save(n);
         }
 
         return null;

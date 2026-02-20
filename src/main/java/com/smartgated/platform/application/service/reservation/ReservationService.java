@@ -3,8 +3,11 @@ package com.smartgated.platform.application.service.reservation;
 
 import com.smartgated.platform.application.usecase.reservation.ReservationUseCase;
 import com.smartgated.platform.domain.enums.reservation.ReservationStatus;
+import com.smartgated.platform.domain.enums.user.UserRole;
+import com.smartgated.platform.domain.model.notification.Notification;
 import com.smartgated.platform.domain.model.reservation.Reservation;
 import com.smartgated.platform.domain.model.users.User;
+import com.smartgated.platform.infrastructure.repository.notification.NotificationRepository;
 import com.smartgated.platform.infrastructure.repository.reservation.ReservationRepository;
 import com.smartgated.platform.infrastructure.repository.user.UserRepository;
 import com.smartgated.platform.presentation.dto.reservation.create.request.CreateReservationRequest;
@@ -25,13 +28,16 @@ public class ReservationService implements ReservationUseCase {
 
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository ;
 
     public ReservationService(
             ReservationRepository reservationRepository,
-            UserRepository userRepository
+            UserRepository userRepository ,
+            NotificationRepository notificationRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;
+        this.notificationRepository = notificationRepository ;
     }
 
     @Override
@@ -51,6 +57,26 @@ public class ReservationService implements ReservationUseCase {
         r.setStatus(ReservationStatus.PENDING);
 
         Reservation saved = reservationRepository.save(r);
+
+        List<User> admins = userRepository.findByRole(UserRole.ADMIN);
+
+        String content = "New reservation request from " + user.getFullname()
+                + " on " + saved.getReservationDate()
+                + " (" + saved.getStartTime() + " - " + saved.getEndTime() + ").";
+
+        List<Notification> notifications = admins.stream().map(admin -> {
+            Notification n = new Notification();
+            n.setUser(admin);
+            n.setCreatedAt(LocalDateTime.now());
+            n.setRead(false);
+            n.setContent(content);
+            return n;
+        }).toList();
+
+        if (!notifications.isEmpty()) {
+            notificationRepository.saveAll(notifications);
+        }
+
 
         CreateReservationResponse response = new CreateReservationResponse();
         response.setReservationId(saved.getReservationId());
@@ -73,6 +99,23 @@ public class ReservationService implements ReservationUseCase {
         r.setNumberOfGuests(request.getNumberOfGuests());
 
         reservationRepository.save(r);
+
+        List<User> admins = userRepository.findByRole(UserRole.ADMIN);
+
+        String content = "Reservation updated by " + r.getUser().getFullname()
+                + " (ReservationId: " + r.getReservationId() + ").";
+
+        notificationRepository.saveAll(
+                admins.stream().map(admin -> {
+                    Notification n = new Notification();
+                    n.setUser(admin);
+                    n.setCreatedAt(LocalDateTime.now());
+                    n.setRead(false);
+                    n.setContent(content);
+                    return n;
+                }).toList()
+        );
+
     }
 
     @Override
@@ -82,6 +125,19 @@ public class ReservationService implements ReservationUseCase {
 
         r.setStatus(request.getStatus());
         reservationRepository.save(r);
+        Reservation saved = reservationRepository.save(r);
+
+        User owner = saved.getUser();
+        if (owner != null) {
+            Notification n = new Notification();
+            n.setUser(owner);
+            n.setCreatedAt(LocalDateTime.now());
+            n.setRead(false);
+            n.setContent("Your reservation (" + saved.getReservationId() + ") status is now: "
+                    + saved.getStatus().name());
+            notificationRepository.save(n);
+        }
+
     }
 
     @Override

@@ -16,39 +16,28 @@ import java.util.UUID;
 @Table(name = "message_groups")
 public class MessageGroup {
 
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Id
-    private UUID groupId ;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID groupId;
 
-    private String groupName ;
+    private String groupName;
+    private String imageUrl;
+    private LocalDateTime createdAt;
 
-    private String imageUrl ;
-
-    private LocalDateTime createdAt ;
-
-    @OneToMany(mappedBy="messageGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "messageGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages;
 
-    @ManyToOne
-    private User user ;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
+    @ManyToMany
+    @JoinTable(
+            name = "message_group_members",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> members;
 
-    public MessageGroup() {
-
-    }
-
-    public MessageGroup(
-            String groupName ,
-            String imageUrl ,
-            LocalDateTime createdAt ,
-            List<Message> messages ,
-            User user
-    ) {
-        this.createdAt = createdAt ;
-        this.imageUrl = imageUrl ;
-        this.messages = messages ;
-        this.groupName = groupName ;
-        this.user = user ;
-    }
-
+    public MessageGroup() {}
 }

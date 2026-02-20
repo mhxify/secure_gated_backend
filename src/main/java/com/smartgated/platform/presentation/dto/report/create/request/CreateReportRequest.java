@@ -9,10 +9,6 @@ public class CreateReportRequest {
 
     private LocalDateTime sentAt;
 
-    private String adminResponse;
-
-    private LocalDateTime repliedAt;
-
     private String imageUrl;
 
     private UUID userId;
@@ -39,22 +35,6 @@ public class CreateReportRequest {
 
     public void setSentAt(LocalDateTime sentAt) {
         this.sentAt = sentAt;
-    }
-
-    public String getAdminResponse() {
-        return adminResponse;
-    }
-
-    public void setAdminResponse(String adminResponse) {
-        this.adminResponse = adminResponse;
-    }
-
-    public LocalDateTime getRepliedAt() {
-        return repliedAt;
-    }
-
-    public void setRepliedAt(LocalDateTime repliedAt) {
-        this.repliedAt = repliedAt;
     }
 
     public String getImageUrl() {

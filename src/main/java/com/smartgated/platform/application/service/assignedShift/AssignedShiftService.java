@@ -2,9 +2,11 @@ package com.smartgated.platform.application.service.assignedShift;
 
 import com.smartgated.platform.application.usecase.assignedShift.AssignedShiftUseCase;
 import com.smartgated.platform.domain.model.assignedShift.AssignedShift;
+import com.smartgated.platform.domain.model.notification.Notification;
 import com.smartgated.platform.domain.model.shift.Shift;
 import com.smartgated.platform.domain.model.users.User;
 import com.smartgated.platform.infrastructure.repository.assignedShift.AssignedShiftRepository;
+import com.smartgated.platform.infrastructure.repository.notification.NotificationRepository;
 import com.smartgated.platform.infrastructure.repository.shift.ShiftRepository;
 import com.smartgated.platform.infrastructure.repository.user.UserRepository;
 import com.smartgated.platform.presentation.dto.assignedShift.create.request.AssignShiftRequest;
@@ -25,15 +27,18 @@ public class AssignedShiftService implements AssignedShiftUseCase {
     private final AssignedShiftRepository assignedShiftRepository;
     private final UserRepository userRepository;
     private final ShiftRepository shiftRepository;
+    private final NotificationRepository notificationRepository ;
 
     public AssignedShiftService(
             AssignedShiftRepository assignedShiftRepository,
             UserRepository userRepository,
-            ShiftRepository shiftRepository
+            ShiftRepository shiftRepository ,
+            NotificationRepository notificationRepository
     ) {
         this.assignedShiftRepository = assignedShiftRepository;
         this.userRepository = userRepository;
         this.shiftRepository = shiftRepository;
+        this.notificationRepository = notificationRepository ;
     }
 
     @Override
@@ -48,11 +53,24 @@ public class AssignedShiftService implements AssignedShiftUseCase {
         assignedShiftRepository.findByUserAndShift(user, shift)
                 .ifPresent(a -> { throw new RuntimeException("Shift already assigned to this user"); });
 
+        Notification notification = new Notification();
+
         AssignedShift assignedShift = new AssignedShift();
         assignedShift.setUser(user);
         assignedShift.setShift(shift);
         assignedShift.setAssignedAt(LocalDateTime.now());
+        notification.setUser(user);
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setRead(false);
+        String content = String.format(
+                "You have been assigned to shift '%s' from %s to %s. Assigned at %s.",
+                shift.getStartTime(),
+                shift.getEndTime(),
+                LocalDateTime.now()
+        );
+        notification.setContent(content);
 
+        notificationRepository.save(notification);
         AssignedShift saved = assignedShiftRepository.save(assignedShift);
 
         AssignShiftResponse response = new AssignShiftResponse();

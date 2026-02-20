@@ -55,8 +55,11 @@ public class UserController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPasswordOtp(@RequestParam String email) {
-        String otp = userUseCase.forgotPasswordOtp(email);
+    public ResponseEntity<String> forgotPasswordOtp(
+            @RequestParam String email ,
+            @RequestParam String password
+    ) {
+        String otp = userUseCase.forgotPasswordOtp(email , password);
         return ResponseEntity.ok(otp);
     }
 

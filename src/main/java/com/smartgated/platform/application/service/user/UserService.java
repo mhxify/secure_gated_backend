@@ -1,9 +1,13 @@
 package com.smartgated.platform.application.service.user;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.UUID;
 
+import com.smartgated.platform.application.service.email.EmailService;
+import com.smartgated.platform.application.service.otp.OtpService;
 import com.smartgated.platform.presentation.dto.fcm.update.UpdateFcmToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +25,20 @@ import com.smartgated.platform.presentation.dto.user.register.response.RegisterR
 public class UserService implements UserUseCase {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder ;
+    private final OtpService otpService ;
+    private final EmailService emailService ;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(
+            UserRepository userRepository ,
+            PasswordEncoder passwordEncoder ,
+            OtpService otpService ,
+            EmailService emailService
+    ) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder ;
+        this.otpService = otpService ;
+        this.emailService = emailService ;
     }
 
     @Override
@@ -36,18 +51,29 @@ public class UserService implements UserUseCase {
 
     @Override
     public RegisterResponse register(RegisterRequest registerRequest) {
+
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new RuntimeException("Email already used: " + registerRequest.getEmail());
         }
+
+        String tempPassword = generateTempPassword(10);
 
         User user = new User();
         user.setFullname(registerRequest.getFullname());
         user.setEmail(registerRequest.getEmail());
         user.setRole(registerRequest.getRole());
-
-        user.setPassword(registerRequest.getPassword());
+        user.setPassword(passwordEncoder.encode(tempPassword));
 
         User saved = userRepository.save(user);
+
+        emailService.send(
+                saved.getEmail(),
+                "Your SmartGated Account",
+                "Your account has been created.\n\n" +
+                        "Email: " + saved.getEmail() + "\n" +
+                        "Temporary Password: " + tempPassword + "\n\n" +
+                        "Please login and change your password."
+        );
 
         RegisterResponse response = new RegisterResponse();
         response.setUserId(saved.getUserId());
@@ -55,20 +81,27 @@ public class UserService implements UserUseCase {
         response.setEmail(saved.getEmail());
         response.setRole(saved.getRole());
         response.setImageUrl(saved.getImageUrl());
-
         return response;
     }
 
+    private String generateTempPassword(int len) {
+        String chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789@#";
+        SecureRandom r = new SecureRandom();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < len; i++) sb.append(chars.charAt(r.nextInt(chars.length())));
+        return sb.toString();
+    }
+
     @Override
-    public String forgotPasswordOtp(String email) {
+    public String forgotPasswordOtp(String email , String password) {
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
-        String otp = String.valueOf((int) (100000 + Math.random() * 900000));
+        user.setPassword(passwordEncoder.encode(password));
 
-        userRepository.save(user);
-
-        return otp;
+        userRepository.save(user) ;
+        return "Password is changed";
     }
 
     @Override
@@ -115,15 +148,15 @@ public class UserService implements UserUseCase {
     }
 
     @Override
-    public String editPassword(EditPasswordRequest editPasswordRequest) {
-        User user = userRepository.findById(editPasswordRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found: " + editPasswordRequest.getUserId()));
+    public String editPassword(EditPasswordRequest req) {
+        User user = userRepository.findById(req.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found: " + req.getUserId()));
 
-        if (!editPasswordRequest.getOldPassword().equals(user.getPassword())) {
+        if (!passwordEncoder.matches(req.getOldPassword(), user.getPassword())) {
             throw new RuntimeException("Old password is incorrect");
         }
 
-        user.setPassword(editPasswordRequest.getNewPassword());
+        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
         userRepository.save(user);
 
         return "Password updated successfully";
@@ -152,5 +185,7 @@ public class UserService implements UserUseCase {
         userRepository.save(user);
 
     }
+
+
 
 }

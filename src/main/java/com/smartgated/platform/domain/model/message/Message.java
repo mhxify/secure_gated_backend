@@ -9,46 +9,24 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "message")
+@Getter @Setter
 public class Message {
 
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Id
-    private UUID messageId ;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID messageId;
 
-    private String content ;
+    private String content;
+    private LocalDateTime createdAt;
+    private Boolean isRead;
 
-    private LocalDateTime createdAt ;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name="sender_id", nullable=false)
+    private User sender;
 
-    private Boolean isRead ;
-
-    @ManyToOne
-    @JoinColumn(name="user_id")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private MessageGroup messageGroup ;
-
-    public Message() {
-
-    }
-
-    public Message(
-            String content ,
-            LocalDateTime createdAt ,
-            boolean isRead ,
-            User user ,
-            MessageGroup messageGroup
-    ) {
-        this.content = content ;
-        this.createdAt = createdAt ;
-        this.isRead = isRead ;
-        this.user = user ;
-        this.messageGroup = messageGroup ;
-    }
-
-
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name="group_id", nullable=false)
+    private MessageGroup messageGroup;
 }

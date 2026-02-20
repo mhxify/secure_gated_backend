@@ -17,7 +17,7 @@ public interface UserUseCase {
     
     RegisterResponse register(RegisterRequest registerRequest);
     
-    String forgotPasswordOtp(String email);
+    String forgotPasswordOtp(String email , String password);
     
     void updateUser(UUID userId, EditProfileRequest registerRequest);
     

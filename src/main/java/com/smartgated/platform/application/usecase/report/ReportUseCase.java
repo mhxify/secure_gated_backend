@@ -7,20 +7,20 @@ import com.smartgated.platform.domain.model.report.Report;
 import com.smartgated.platform.presentation.dto.report.adminReply.AdminReplyReportRequest;
 import com.smartgated.platform.presentation.dto.report.create.request.CreateReportRequest;
 import com.smartgated.platform.presentation.dto.report.create.response.CreateReportResponse;
+import com.smartgated.platform.presentation.dto.report.get.GetReport;
 
 public interface ReportUseCase {
 
-    List<Report> getAllReports();
+    List<GetReport> getAllReports();
 
-    Report getReportById(UUID reportId);
+    GetReport getReportById(UUID reportId);
 
-    List<Report> getReportsByUserId(UUID userId);
+    List<GetReport> getReportsByUserId(UUID userId);
 
     CreateReportResponse createReport(CreateReportRequest report);
 
-    Report updateReport(UUID reportId, AdminReplyReportRequest report);
+    GetReport updateReport(UUID reportId, AdminReplyReportRequest report);
 
     void deleteReport(UUID reportId);
 
-    
 }

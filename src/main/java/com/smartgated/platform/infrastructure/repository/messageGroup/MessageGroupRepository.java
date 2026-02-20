@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public interface MessageGroupRepository extends JpaRepository<MessageGroup , UUID> {
 
-    List<MessageGroup> findByUser_UserId(UUID userId);
+    List<MessageGroup> findByMembers_UserId(UUID userId);
+
 
 }

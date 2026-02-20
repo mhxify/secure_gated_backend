@@ -7,14 +7,7 @@ import com.smartgated.platform.domain.enums.incident.IncidentStatus;
 import com.smartgated.platform.domain.model.category.Category;
 import com.smartgated.platform.domain.model.users.User;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "incidents")
@@ -28,6 +21,7 @@ public class Incident {
 
     private LocalDateTime reportedAt;
 
+    @Enumerated(EnumType.STRING)
     private IncidentStatus status;
 
     @OneToOne(mappedBy = "incident", fetch = FetchType.LAZY)

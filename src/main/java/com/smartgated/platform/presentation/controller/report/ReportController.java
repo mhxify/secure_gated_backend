@@ -3,6 +3,7 @@ package com.smartgated.platform.presentation.controller.report;
 import java.util.List;
 import java.util.UUID;
 
+import com.smartgated.platform.presentation.dto.report.get.GetReport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,26 +33,26 @@ public class ReportController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Report>> getAllReports() {
+    public ResponseEntity<List<GetReport>> getAllReports() {
         return ResponseEntity.ok(reportUseCase.getAllReports());
     }
 
     @GetMapping("/{reportId}")
-    public ResponseEntity<Report> getReportById(
+    public ResponseEntity<GetReport> getReportById(
             @PathVariable UUID reportId) {
 
         return ResponseEntity.ok(reportUseCase.getReportById(reportId));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Report>> getReportsByUserId(
+    public ResponseEntity<List<GetReport>> getReportsByUserId(
             @PathVariable UUID userId) {
 
         return ResponseEntity.ok(reportUseCase.getReportsByUserId(userId));
     }
 
     @PatchMapping("/{reportId}")
-    public ResponseEntity<Report> updateReport(
+    public ResponseEntity<GetReport> updateReport(
             @PathVariable UUID reportId,
             @RequestBody AdminReplyReportRequest request) {
 

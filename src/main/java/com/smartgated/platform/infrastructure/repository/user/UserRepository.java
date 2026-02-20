@@ -1,5 +1,6 @@
 package com.smartgated.platform.infrastructure.repository.user;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,5 +17,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByEmail(String email);
 
-    long countByRole(UserRole role);    
+    long countByRole(UserRole role);
+
+    List<User> findByRole(UserRole role);
+
 }
