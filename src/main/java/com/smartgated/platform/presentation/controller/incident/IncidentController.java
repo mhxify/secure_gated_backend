@@ -91,6 +91,4 @@ public class IncidentController {
     public ResponseEntity<List<GetIncident>> getAllIncidents() {
         return ResponseEntity.ok(incidentUseCase.getAllIncidents());
     }
-    
-    
 }

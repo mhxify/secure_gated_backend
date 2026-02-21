@@ -8,7 +8,8 @@ import com.smartgated.platform.presentation.dto.fcm.update.UpdateFcmToken;
 import com.smartgated.platform.presentation.dto.user.edit.password.request.EditPasswordRequest;
 import com.smartgated.platform.presentation.dto.user.edit.profile.request.EditProfileRequest;
 import com.smartgated.platform.presentation.dto.user.register.register.RegisterRequest;
-import com.smartgated.platform.presentation.dto.user.register.response.*;;
+import com.smartgated.platform.presentation.dto.user.register.response.*;
+import org.springframework.web.multipart.MultipartFile;;
 
 
 public interface UserUseCase {
@@ -19,7 +20,7 @@ public interface UserUseCase {
     
     String forgotPasswordOtp(String email , String password);
     
-    void updateUser(UUID userId, EditProfileRequest registerRequest);
+    void updateUser(UUID userId, String email, MultipartFile image);
     
     String editPassword(EditPasswordRequest editPasswordRequest);
     

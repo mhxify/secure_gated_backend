@@ -3,6 +3,7 @@ package com.smartgated.platform.presentation.controller.report;
 import java.util.List;
 import java.util.UUID;
 
+import com.smartgated.platform.application.service.file.FileStorageService;
 import com.smartgated.platform.presentation.dto.report.get.GetReport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,22 +14,37 @@ import com.smartgated.platform.domain.model.report.Report;
 import com.smartgated.platform.presentation.dto.report.adminReply.AdminReplyReportRequest;
 import com.smartgated.platform.presentation.dto.report.create.request.CreateReportRequest;
 import com.smartgated.platform.presentation.dto.report.create.response.CreateReportResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/reports")
 public class ReportController {
 
     private final ReportUseCase reportUseCase;
+    private final FileStorageService fileStorageService ;
 
-    public ReportController(ReportUseCase reportUseCase) {
+    public ReportController(
+            ReportUseCase reportUseCase ,
+            FileStorageService fileStorageService
+    ) {
         this.reportUseCase = reportUseCase;
+        this.fileStorageService = fileStorageService ;
     }
 
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<CreateReportResponse> createReport(
-            @RequestBody CreateReportRequest request) {
+            @RequestParam UUID userId,
+            @RequestParam String content,
+            @RequestPart(required = false) MultipartFile image
+    ) {
+        String imageUrl = fileStorageService.saveReportImage(image);
 
-        CreateReportResponse response = reportUseCase.createReport(request);
+        CreateReportRequest req = new CreateReportRequest();
+        req.setUserId(userId);
+        req.setContent(content);
+        req.setImageUrl(imageUrl);
+
+        CreateReportResponse response = reportUseCase.createReport(req);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

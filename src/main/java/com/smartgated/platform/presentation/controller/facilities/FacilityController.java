@@ -1,5 +1,6 @@
 package com.smartgated.platform.presentation.controller.facilities;
 
+import com.smartgated.platform.application.service.file.FileStorageService;
 import com.smartgated.platform.application.usecase.facilities.FacilitiesUseCase;
 import com.smartgated.platform.domain.enums.facility.FacilitiesStatus;
 import com.smartgated.platform.presentation.dto.facilities.create.request.CreateFacilityRequest;
@@ -8,6 +9,7 @@ import com.smartgated.platform.presentation.dto.facilities.edit.EditFacilityRequ
 import com.smartgated.platform.presentation.dto.facilities.get.GetFacility;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,17 +19,31 @@ import java.util.UUID;
 public class FacilityController {
 
     private final FacilitiesUseCase facilitiesUseCase;
+    private final FileStorageService fileStorageService;
 
-    public FacilityController(FacilitiesUseCase facilitiesUseCase) {
+
+    public FacilityController(
+            FacilitiesUseCase facilitiesUseCase ,
+            FileStorageService fileStorageService
+    ) {
         this.facilitiesUseCase = facilitiesUseCase;
+        this.fileStorageService = fileStorageService ;
     }
 
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<CreateFacilityResponse> createFacility(
-            @RequestBody CreateFacilityRequest request) {
+            @RequestParam String name,
+            @RequestParam Long capacity,
+            @RequestPart(required = false) MultipartFile image
+    ) {
+        String imageUrl = fileStorageService.saveFacilityImage(image);
 
-        CreateFacilityResponse response = facilitiesUseCase.createFacility(request);
-        return ResponseEntity.ok(response);
+        CreateFacilityRequest req = new CreateFacilityRequest();
+        req.setName(name);
+        req.setCapacity(capacity);
+        req.setImageUrl(imageUrl);
+
+        return ResponseEntity.ok(facilitiesUseCase.createFacility(req));
     }
 
     @GetMapping("/{facilityId}")
@@ -45,19 +61,36 @@ public class FacilityController {
         return ResponseEntity.ok(facilities);
     }
 
-    @PatchMapping("/{facilityId}")
+    @PatchMapping(
+            value = "/{facilityId}", consumes = "multipart/form-data"
+    )
     public ResponseEntity<Void> editFacility(
             @PathVariable UUID facilityId,
-            @RequestBody EditFacilityRequest request) {
+            @RequestParam String name,
+            @RequestParam Long capacity,
+            @RequestPart(required = false) MultipartFile image
+    ) {
+        String imageUrl = (image != null && !image.isEmpty())
+                ? fileStorageService.saveFacilityImage(image)
+                : null;
 
-        facilitiesUseCase.editFacility(facilityId, request);
+        EditFacilityRequest req = new EditFacilityRequest();
+        req.setName(name);
+        req.setCapacity(capacity);
+
+        if (imageUrl != null) {
+            req.setImageUrl(imageUrl);
+        }
+
+        facilitiesUseCase.editFacility(facilityId, req);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{facilityId}/status")
     public ResponseEntity<Void> patchFacilityStatus(
             @PathVariable UUID facilityId,
-            @RequestParam FacilitiesStatus status) {
+            @RequestParam FacilitiesStatus status
+    ) {
 
         facilitiesUseCase.patchFacilityStatus(facilityId, status);
         return ResponseEntity.noContent().build();

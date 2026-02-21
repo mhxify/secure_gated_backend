@@ -1,7 +1,7 @@
 package com.smartgated.platform.presentation.controller.post;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.smartgated.platform.application.service.file.FileStorageService;
+import org.springframework.web.bind.annotation.*;
 
 import com.smartgated.platform.application.usecase.post.PostUseCase;
 import com.smartgated.platform.presentation.dto.post.create.request.CreatePostRequest;
@@ -13,30 +13,36 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-
-
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/posts")
 public class PostController {
     private final PostUseCase postUseCase;
+    private final FileStorageService fileStorageService ;
 
-    public PostController(PostUseCase postUseCase) {
+    public PostController(
+            PostUseCase postUseCase ,
+            FileStorageService fileStorageService
+    ) {
         this.postUseCase = postUseCase;
+        this.fileStorageService = fileStorageService ;
     }
 
-    @PostMapping
+    @PostMapping(value = "/create", consumes = "multipart/form-data")
     public ResponseEntity<CreatePostResponse> createPost(
-        @RequestBody CreatePostRequest request
-    ){
-        CreatePostResponse response = postUseCase.createPost(request);
-        return ResponseEntity.ok(response);
+            @RequestParam UUID userId,
+            @RequestParam String content,
+            @RequestPart(required = false) MultipartFile image
+    ) {
+        String imageUrl = fileStorageService.savePostImage(image);
+
+        CreatePostRequest req = new CreatePostRequest();
+        req.setUserId(userId);
+        req.setContent(content);
+        req.setImageUrl(imageUrl);
+
+        return ResponseEntity.ok(postUseCase.createPost(req));
     }
 
     @DeleteMapping("/{postId}")

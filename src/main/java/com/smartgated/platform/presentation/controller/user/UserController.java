@@ -14,6 +14,7 @@ import com.smartgated.platform.presentation.dto.user.edit.password.request.EditP
 import com.smartgated.platform.presentation.dto.user.edit.profile.request.EditProfileRequest;
 import com.smartgated.platform.presentation.dto.user.register.register.RegisterRequest;
 import com.smartgated.platform.presentation.dto.user.register.response.RegisterResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/users")
@@ -39,12 +40,13 @@ public class UserController {
         return ResponseEntity.ok(userUseCase.getUserById(userId));
     }
 
-    @PatchMapping("/{userId}")
+    @PatchMapping(value = "/{userId}" , consumes = "multipart/form-data")
     public ResponseEntity<Void> updateUser(
             @PathVariable UUID userId,
-            @RequestBody EditProfileRequest request
+            @RequestParam(required = false) String email,
+            @RequestPart(required = false) MultipartFile image
     ) {
-        userUseCase.updateUser(userId, request);
+        userUseCase.updateUser(userId, email, image);
         return ResponseEntity.noContent().build();
     }
 

@@ -80,7 +80,11 @@ public class FacilityService implements FacilitiesUseCase {
                 .orElseThrow(() -> new RuntimeException("Facility not found"));
 
         facility.setName(request.getName());
-        facility.setImageUrl(request.getImageUrl());
+
+        if (request.getImageUrl() != null) {
+            facility.setImageUrl(request.getImageUrl());
+        }
+
         facility.setCapacity(request.getCapacity());
 
         facilitiesRepository.save(facility);

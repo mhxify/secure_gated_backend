@@ -29,6 +29,8 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/images/**",
+                                "/uploads/**",
                                 "/auth/**",
                                 "/error",
                                 "/users/register",

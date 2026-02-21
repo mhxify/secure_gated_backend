@@ -1,15 +1,11 @@
 package com.smartgated.platform.presentation.dto.user.edit.profile.request;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class EditProfileRequest {
     private String email;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    
+    private String imageUrl ;
 }

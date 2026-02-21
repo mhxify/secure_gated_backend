@@ -38,7 +38,6 @@ public class PostService implements PostUseCase {
         this.commentRepository = commentRepository;
     }
 
-    // ========================= CREATE =========================
 
     @Override
     public CreatePostResponse createPost(CreatePostRequest request) {
@@ -80,7 +79,7 @@ public class PostService implements PostUseCase {
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         post.setContent(request.getContent());
-        post.setImageUrl(request.getImageUrl());
+        postRepository.save(post);
     }
 
 

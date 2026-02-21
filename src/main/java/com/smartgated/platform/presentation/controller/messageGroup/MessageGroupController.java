@@ -1,5 +1,6 @@
 package com.smartgated.platform.presentation.controller.messageGroup;
 
+import com.smartgated.platform.application.service.file.FileStorageService;
 import com.smartgated.platform.application.usecase.messageGroup.MessageGroupUseCase;
 import com.smartgated.platform.presentation.dto.message.get.GetMessage;
 import com.smartgated.platform.presentation.dto.messageGroup.create.request.CreateMessageGroupRequest;
@@ -7,6 +8,7 @@ import com.smartgated.platform.presentation.dto.messageGroup.create.response.Cre
 import com.smartgated.platform.presentation.dto.messageGroup.get.GetMessageGroup;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,14 +18,32 @@ import java.util.UUID;
 public class MessageGroupController {
 
     private final MessageGroupUseCase messageGroupUseCase;
+    private final FileStorageService fileStorageService;
 
-    public MessageGroupController(MessageGroupUseCase messageGroupUseCase) {
+    public MessageGroupController(
+            MessageGroupUseCase messageGroupUseCase ,
+            FileStorageService fileStorageService
+    ) {
         this.messageGroupUseCase = messageGroupUseCase;
+        this.fileStorageService = fileStorageService ;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<CreateMessageGroupResponse> create(@RequestBody CreateMessageGroupRequest request) {
-        return ResponseEntity.ok(messageGroupUseCase.createGroup(request));
+    @PostMapping(value = "/create", consumes = "multipart/form-data")
+    public ResponseEntity<CreateMessageGroupResponse> create(
+            @RequestParam UUID userId,
+            @RequestParam String groupName,
+            @RequestPart(required = false) MultipartFile image,
+            @RequestParam(required = false) List<UUID> memberIds
+    ) {
+        String imageUrl = fileStorageService.saveGroupImage(image);
+
+        CreateMessageGroupRequest req = new CreateMessageGroupRequest();
+        req.setUserId(userId);
+        req.setGroupName(groupName);
+        req.setImageUrl(imageUrl);
+        req.setMemberIds(memberIds);
+
+        return ResponseEntity.ok(messageGroupUseCase.createGroup(req));
     }
 
     @GetMapping("/me")

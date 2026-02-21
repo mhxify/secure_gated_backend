@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.smartgated.platform.application.service.email.EmailService;
+import com.smartgated.platform.application.service.file.FileStorageService;
 import com.smartgated.platform.application.service.otp.OtpService;
 import com.smartgated.platform.presentation.dto.fcm.update.UpdateFcmToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +20,7 @@ import com.smartgated.platform.presentation.dto.user.edit.password.request.EditP
 import com.smartgated.platform.presentation.dto.user.edit.profile.request.EditProfileRequest;
 import com.smartgated.platform.presentation.dto.user.register.register.RegisterRequest;
 import com.smartgated.platform.presentation.dto.user.register.response.RegisterResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -26,19 +28,19 @@ public class UserService implements UserUseCase {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder ;
-    private final OtpService otpService ;
     private final EmailService emailService ;
+    private final FileStorageService fileStorageService ;
 
     public UserService(
             UserRepository userRepository ,
             PasswordEncoder passwordEncoder ,
-            OtpService otpService ,
-            EmailService emailService
+            EmailService emailService ,
+            FileStorageService fileStorageService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder ;
-        this.otpService = otpService ;
         this.emailService = emailService ;
+        this.fileStorageService = fileStorageService ;
     }
 
     @Override
@@ -58,10 +60,13 @@ public class UserService implements UserUseCase {
 
         String tempPassword = generateTempPassword(10);
 
+        String imageUrl = "/images/default-user.png";
+
         User user = new User();
         user.setFullname(registerRequest.getFullname());
         user.setEmail(registerRequest.getEmail());
         user.setRole(registerRequest.getRole());
+        user.setImageUrl(imageUrl);
         user.setPassword(passwordEncoder.encode(tempPassword));
 
         User saved = userRepository.save(user);
@@ -105,12 +110,19 @@ public class UserService implements UserUseCase {
     }
 
     @Override
-    public void updateUser(UUID userId, EditProfileRequest editProfileRequest) {
+    public void updateUser(UUID userId, String email, MultipartFile image) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
-        user.setEmail(editProfileRequest.getEmail());
-        //user.setImageUrl(editProfileRequest.getImageUrl());
+        if (email != null && !email.isBlank()) {
+            user.setEmail(email);
+        }
+
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = fileStorageService.saveUserImage(image);
+            user.setImageUrl(imageUrl);
+        }
 
         userRepository.save(user);
     }

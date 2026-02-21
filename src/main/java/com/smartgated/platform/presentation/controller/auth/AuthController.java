@@ -6,6 +6,9 @@ import com.smartgated.platform.domain.model.users.User;
 import com.smartgated.platform.infrastructure.repository.user.UserRepository;
 import com.smartgated.platform.presentation.dto.auth.request.LoginRequest;
 import com.smartgated.platform.presentation.dto.auth.response.LoginResponse;
+import com.smartgated.platform.presentation.dto.auth.response.MeResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,5 +57,24 @@ public class AuthController {
     @PostMapping("/verify")
     public void verify(@RequestParam String email, @RequestParam String code) {
         otpService.verifyOtp(email, code);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<MeResponse> me() {
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!(principal instanceof User user)) {
+            return ResponseEntity.status(401).build();
+        }
+
+        MeResponse res = new MeResponse();
+        res.setUserId(user.getUserId());
+        res.setFullname(user.getFullname());
+        res.setEmail(user.getEmail());
+        res.setRole(user.getRole());
+        res.setImageUrl(user.getImageUrl());
+
+        return ResponseEntity.ok(res);
     }
 }
